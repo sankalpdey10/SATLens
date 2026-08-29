@@ -1,5 +1,6 @@
 import * as z from "zod/v4";
 import { askStructured, TUTOR_SYSTEM } from "./ai";
+import { demoDiagnosis, demoFasterSolutions } from "./demo";
 import { MISTAKE_DESCRIPTIONS, MISTAKE_TYPES } from "./taxonomy";
 import { getDb } from "./db";
 import { listAttempts, saveDiagnosis } from "./repo";
@@ -123,6 +124,7 @@ ${priorMistakeContext(attempt)}`,
     ],
     schema: DiagnosisSchema,
     effort: "high",
+    demo: () => demoDiagnosis(attempt),
   });
 
   saveDiagnosis({
@@ -214,5 +216,17 @@ Identify where THIS student specifically is leaving time or accuracy on the tabl
     ],
     schema: FasterSolutionSchema,
     effort: "high",
+    demo: () =>
+      demoFasterSolutions(
+        attempts.map((a) => ({
+          id: a.id,
+          skill: a.skill,
+          faster_solution:
+            (db
+              .prepare(`SELECT faster_solution FROM diagnoses WHERE attempt_id = ?`)
+              .get(a.id) as { faster_solution: string | null } | undefined)
+              ?.faster_solution ?? null,
+        })),
+      ),
   });
 }

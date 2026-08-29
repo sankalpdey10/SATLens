@@ -63,12 +63,29 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). The database (`satlens.db`) is created on first run and is gitignored.
 
+### Demo mode (no API key needed)
+
+For a hackathon demo, a classroom, or working on a plane, SATLens runs the entire product with **zero API calls**:
+
+```bash
+npm run seed   # load the sample student history
+npm run demo   # start with SATLENS_DEMO=1
+```
+
+Every button works — diagnosis, pattern detection, practice generation, retest evaluation, the study plan, classification and text import — backed by deterministic local implementations in `src/lib/demo.ts` instead of the model.
+
+**These are rules, not reasoning, and the app says so.** A "Demo mode" badge sits in the sidebar the whole time. The fallbacks are data-driven where it counts — pattern detection genuinely groups your real diagnoses by skill and mistake type, the study plan really does weight time inversely to your measured accuracy, and retest status is computed from real attempts — so the demo still behaves correctly if someone adds a question live. But they cannot describe a mechanism they have not been told about, and they should never be presented as AI analysis.
+
+The one thing demo mode cannot do is read a PDF; it says so and points you at the paste-text tab.
+
+To switch back to real analysis, put a key in `.env.local` and run `npm run dev` instead of `npm run demo`.
+
 ### Trying it with sample data
 
 To see the dashboard, patterns, and progress tracking populated without importing anything:
 
 ```bash
-node scripts/seed.mjs --reset
+npm run seed
 ```
 
 This loads a fictional student's three practice tests plus a week of targeted practice, with diagnoses and detected patterns already in place. All question text in the fixture is original. Run it again with `--reset` to start clean.

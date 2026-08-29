@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "demo": "SATLENS_DEMO=1 next dev",
+    "seed": "node scripts/seed.mjs --reset"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.121.0",

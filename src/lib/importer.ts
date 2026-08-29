@@ -2,6 +2,7 @@ import * as z from "zod/v4";
 import Anthropic from "@anthropic-ai/sdk";
 import { askStructured, TUTOR_SYSTEM } from "./ai";
 import { DOMAINS, SECTIONS, findSkill } from "./taxonomy";
+import { demoClassify, demoExtractText } from "./demo";
 
 /**
  * Turns raw practice material (a pasted answer log, or a practice-test PDF)
@@ -88,6 +89,7 @@ export async function extractFromText(text: string): Promise<ExtractionResult> {
     schema: ExtractedSchema,
     effort: "medium",
     maxTokens: 16000,
+    demo: () => demoExtractText(text),
   });
 }
 
@@ -124,6 +126,12 @@ export async function extractFromPdf(
     schema: ExtractedSchema,
     effort: "medium",
     maxTokens: 16000,
+    // A PDF cannot be parsed locally; say so rather than inventing questions.
+    demo: () => ({
+      questions: [],
+      notes:
+        "Demo mode cannot read PDFs -- that step needs the model. Use the 'Paste text' tab, or add an ANTHROPIC_API_KEY to enable PDF import.",
+    }),
   });
 }
 
@@ -164,6 +172,7 @@ ${
     schema: ClassifySchema,
     effort: "low",
     maxTokens: 2000,
+    demo: () => demoClassify(input),
   });
 }
 

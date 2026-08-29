@@ -1,5 +1,6 @@
 import * as z from "zod/v4";
 import { askStructured, TUTOR_SYSTEM } from "./ai";
+import { demoEvaluation, demoPracticeItem } from "./demo";
 import { getDb } from "./db";
 import {
   getPattern,
@@ -133,6 +134,7 @@ ${mistakeContext}`,
     ],
     schema: GeneratedSchema,
     effort: "high",
+    demo: () => demoPracticeItem(skillNode.name, difficulty),
   });
 
   const rationales: Record<string, string> = {};
@@ -274,6 +276,13 @@ ${Object.entries(item.rationales)
     ],
     schema: EvaluationSchema,
     effort: "high",
+    demo: () =>
+      demoEvaluation({
+        isCorrect,
+        reasoning: reasoning ?? null,
+        skill: item.skill,
+        patternTitle: pattern?.title ?? null,
+      }),
   });
 
   return {

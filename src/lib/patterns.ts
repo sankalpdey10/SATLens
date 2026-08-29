@@ -1,5 +1,6 @@
 import * as z from "zod/v4";
 import { askStructured, TUTOR_SYSTEM } from "./ai";
+import { demoPatterns } from "./demo";
 import { getDb } from "./db";
 import { replacePatterns, type NewPattern } from "./repo";
 import { MISTAKE_TYPES, SECTIONS } from "./taxonomy";
@@ -170,6 +171,18 @@ ${history}`,
     schema: PatternSchema,
     effort: "max", // this is the hardest reasoning task in the product
     maxTokens: 16000,
+    demo: () =>
+      demoPatterns(
+        rows.map((r) => ({
+          id: r.id,
+          skill: r.skill,
+          domain: r.domain,
+          section: r.section,
+          mistake_type: r.mistake_type,
+          headline: r.headline,
+          occurred_on: r.occurred_on,
+        })),
+      ),
   });
 
   // Drop hallucinated IDs, then drop patterns that no longer clear the

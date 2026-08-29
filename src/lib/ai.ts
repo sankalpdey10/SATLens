@@ -10,6 +10,16 @@ import * as z from "zod/v4";
 
 export const MODEL = "claude-opus-5";
 
+/**
+ * Demo mode runs the whole product with zero API calls: every model-backed
+ * feature falls back to a deterministic local implementation. Intended for
+ * live demos and offline development, not as a substitute for the real
+ * analysis -- the fallbacks follow rules, they do not reason.
+ */
+export function isDemoMode(): boolean {
+  return process.env.SATLENS_DEMO === "1";
+}
+
 /** Errors we want to surface to the student as readable text, not a stack trace. */
 export class AIError extends Error {
   constructor(
@@ -42,6 +52,11 @@ interface StructuredRequest<S extends z.ZodType> {
   /** Higher effort for genuinely hard reasoning (pattern detection); lower for extraction. */
   effort?: Effort;
   maxTokens?: number;
+  /**
+   * Deterministic local stand-in used when SATLENS_DEMO=1. Returns the same
+   * shape the schema describes, so every caller downstream is unchanged.
+   */
+  demo?: () => z.infer<S>;
 }
 
 /**
@@ -54,7 +69,17 @@ export async function askStructured<S extends z.ZodType>({
   schema,
   effort = "high",
   maxTokens = 16000,
+  demo,
 }: StructuredRequest<S>): Promise<z.infer<S>> {
+  if (isDemoMode() && demo) {
+    // A little latency so the UI's pending states are visible on stage;
+    // instant responses read as "nothing happened".
+    await new Promise((resolve) => setTimeout(resolve, 550));
+    // Parsed through the same schema the live path uses, so a malformed
+    // fallback fails here rather than downstream.
+    return schema.parse(demo()) as z.infer<S>;
+  }
+
   const anthropic = getClient();
 
   try {

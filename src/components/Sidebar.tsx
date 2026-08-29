@@ -124,7 +124,7 @@ function ThemeToggle() {
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ demo = false }: { demo?: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -168,6 +168,30 @@ export function Sidebar() {
       </nav>
 
       <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border)] pt-3">
+        {/* Demo mode must never be mistaken for real analysis. */}
+        {demo && (
+          <div
+            className="mx-1 mb-1 rounded-lg px-2.5 py-2"
+            style={{ background: "var(--warning-soft)" }}
+            role="status"
+          >
+            <p
+              className="flex items-center gap-1.5 text-[11.5px] font-semibold"
+              style={{ color: "var(--serious)" }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+                <path d="M12 8v5" />
+                <circle cx="12" cy="16.5" r="0.6" fill="currentColor" />
+                <circle cx="12" cy="12" r="9" strokeWidth="2" />
+              </svg>
+              Demo mode
+            </p>
+            <p className="mt-1 text-[11px] leading-snug text-[var(--text-secondary)]">
+              Analysis is rule-based, not AI. Add an API key and restart for real
+              diagnosis.
+            </p>
+          </div>
+        )}
         <ThemeToggle />
         <p className="px-3 text-[11px] leading-relaxed text-[var(--text-muted)]">
           Practice questions are AI-generated originals. No College Board content

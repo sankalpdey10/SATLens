@@ -1,5 +1,6 @@
 import * as z from "zod/v4";
 import { askStructured, TUTOR_SYSTEM } from "./ai";
+import { demoPlan } from "./demo";
 import { listPatterns, getProfile } from "./repo";
 import {
   getAccuracyOverTime,
@@ -128,5 +129,24 @@ ${trendText}`,
     ],
     schema: PlanSchema,
     effort: "high",
+    demo: () =>
+      demoPlan({
+        weakest: weakest.map((s) => ({
+          skill: s.skill,
+          domain: s.domain,
+          accuracy: s.accuracy,
+          total: s.total,
+        })),
+        patterns: patterns.map((p) => ({
+          title: p.title,
+          skill: p.skill,
+          status: p.status,
+          severity: p.severity,
+        })),
+        hoursPerWeek: profile.hours_per_week,
+        daysUntilTest,
+        targetScore: profile.target_score,
+        currentScore: profile.current_score,
+      }),
   });
 }

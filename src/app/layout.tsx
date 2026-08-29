@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
+import { isDemoMode } from "@/lib/ai";
 
 export const metadata: Metadata = {
   title: "SATLens",
@@ -28,7 +29,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen">
         <div className="flex min-h-screen">
-          <Sidebar />
+          <Sidebar demo={isDemoMode()} />
           <main className="min-w-0 flex-1">
             <div className="mx-auto max-w-6xl px-6 py-10 lg:px-10">{children}</div>
           </main>
