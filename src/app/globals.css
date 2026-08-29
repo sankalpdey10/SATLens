@@ -1,0 +1,216 @@
+@import "tailwindcss";
+
+/*
+ * SATLens design tokens.
+ * Light values live on bare :root; dark values are redefined under both the
+ * OS media query and an explicit [data-theme="dark"] stamp so the in-app
+ * toggle wins in both directions.
+ */
+:root {
+  color-scheme: light;
+
+  --page:           #f7f7f5;
+  --surface-1:      #fcfcfb;
+  --surface-2:      #f2f2ef;
+  --surface-sunken: #ececea;
+  --border:         #e0dfda;
+  --border-strong:  #cbcac3;
+
+  --text-primary:   #14140f;
+  --text-secondary: #52514e;
+  --text-muted:     #7c7b74;
+
+  --accent:         #2a78d6;
+  --accent-hover:   #1c5cab;
+  --accent-soft:    #e8f0fd;
+  --accent-ink:     #ffffff;
+
+  /* Categorical series (validated: adjacent CVD dE 24.7 light / 26.8 dark) */
+  --series-1:       #2a78d6;
+  --series-2:       #eb6834;
+
+  /* Sequential blue ramp, used for magnitude encoding */
+  --seq-100:        #cde2fb;
+  --seq-250:        #86b6ef;
+  --seq-400:        #3987e5;
+  --seq-550:        #1c5cab;
+
+  /* Status - fixed, never themed, always paired with an icon or label */
+  --good:           #0ca30c;
+  --warning:        #fab219;
+  --serious:        #ec835a;
+  --critical:       #d03b3b;
+
+  --good-soft:      #e6f6e6;
+  --warning-soft:   #fdf4e0;
+  --critical-soft:  #fbe9e9;
+
+  --grid:           #e6e5e0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --page:           #121211;
+    --surface-1:      #1a1a19;
+    --surface-2:      #232322;
+    --surface-sunken: #0e0e0d;
+    --border:         #34342f;
+    --border-strong:  #4a4a44;
+
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #908f85;
+
+    --accent:         #3987e5;
+    --accent-hover:   #5598e7;
+    --accent-soft:    #14263c;
+    --accent-ink:     #0b1420;
+
+    --series-1:       #3987e5;
+    --series-2:       #d95926;
+
+    --seq-100:        #104281;
+    --seq-250:        #256abf;
+    --seq-400:        #3987e5;
+    --seq-550:        #86b6ef;
+
+    --good-soft:      #102a10;
+    --warning-soft:   #33280b;
+    --critical-soft:  #331616;
+
+    --grid:           #2c2c28;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --page:           #121211;
+  --surface-1:      #1a1a19;
+  --surface-2:      #232322;
+  --surface-sunken: #0e0e0d;
+  --border:         #34342f;
+  --border-strong:  #4a4a44;
+
+  --text-primary:   #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted:     #908f85;
+
+  --accent:         #3987e5;
+  --accent-hover:   #5598e7;
+  --accent-soft:    #14263c;
+  --accent-ink:     #0b1420;
+
+  --series-1:       #3987e5;
+  --series-2:       #d95926;
+
+  --seq-100:        #104281;
+  --seq-250:        #256abf;
+  --seq-400:        #3987e5;
+  --seq-550:        #86b6ef;
+
+  --good-soft:      #102a10;
+  --warning-soft:   #33280b;
+  --critical-soft:  #331616;
+
+  --grid:           #2c2c28;
+}
+
+/* Expose the tokens to Tailwind utilities (bg-surface-1, text-muted, ...) */
+@theme inline {
+  --color-page:           var(--page);
+  --color-surface-1:      var(--surface-1);
+  --color-surface-2:      var(--surface-2);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-border-subtle:  var(--border);
+  --color-border-strong:  var(--border-strong);
+
+  --color-ink:            var(--text-primary);
+  --color-ink-secondary:  var(--text-secondary);
+  --color-ink-muted:      var(--text-muted);
+
+  --color-accent:         var(--accent);
+  --color-accent-hover:   var(--accent-hover);
+  --color-accent-soft:    var(--accent-soft);
+  --color-accent-ink:     var(--accent-ink);
+
+  --color-series-1:       var(--series-1);
+  --color-series-2:       var(--series-2);
+
+  --color-good:           var(--good);
+  --color-warning:        var(--warning);
+  --color-serious:        var(--serious);
+  --color-critical:       var(--critical);
+  --color-good-soft:      var(--good-soft);
+  --color-warning-soft:   var(--warning-soft);
+  --color-critical-soft:  var(--critical-soft);
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  background: var(--page);
+}
+
+body {
+  background: var(--page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Tabular figures keep percentages from jittering as they update. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text-primary);
+}
+
+/* Recharts paints its own SVG text; force it onto our ink tokens. */
+.recharts-text,
+.recharts-cartesian-axis-tick-value {
+  fill: var(--text-muted);
+  font-size: 12px;
+}
+
+.recharts-cartesian-grid line {
+  stroke: var(--grid);
+}
+
+.recharts-surface {
+  overflow: visible;
+}
+
+@keyframes satlens-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.pulse {
+  animation: satlens-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes satlens-fade-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.fade-up {
+  animation: satlens-fade-up 0.24s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse, .fade-up { animation: none; }
+}
