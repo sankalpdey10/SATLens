@@ -1,7 +1,7 @@
 # SATLens
 
 ## Contributors
-Sankalp Dey & Shriyan Dey.
+Sankalp Dey and Shriyan Dey.
 
 ## Description
 A tool that analyzes a student's SAT practice history to figure out exactly where and why they're losing points, rather than just giving them a score.
