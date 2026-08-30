@@ -5,6 +5,7 @@ import {
   Card,
   EmptyState,
   LinkButton,
+  ConfidenceBadge,
   PageHeader,
   PatternStatusBadge,
 } from "@/components/ui";
@@ -98,6 +99,7 @@ export default function PatternsPage() {
                     >
                       {p.severity} impact
                     </Badge>
+                    <ConfidenceBadge confidence={p.confidence} />
                   </div>
                 </div>
 

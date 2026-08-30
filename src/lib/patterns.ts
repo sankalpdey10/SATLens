@@ -37,6 +37,11 @@ const PatternSchema = z.object({
         .describe("The specific skill, or null if the pattern spans a whole domain."),
       mistake_type: z.enum(MISTAKE_TYPES).nullable(),
       severity: z.enum(["low", "moderate", "high"]),
+      confidence: z
+        .number()
+        .describe(
+          "0-1. How strongly the cited evidence supports this being a real recurring pattern rather than coincidence.",
+        ),
       evidence: z.array(
         z.object({
           attempt_id: z
@@ -205,6 +210,7 @@ ${history}`,
       skill: p.skill,
       mistake_type: p.mistake_type,
       severity: p.severity,
+      confidence: p.confidence,
       evidence: evidence.map((e) => ({ attempt_id: e.attempt_id, note: e.note })),
     });
   }

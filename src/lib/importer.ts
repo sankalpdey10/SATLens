@@ -126,11 +126,11 @@ export async function extractFromPdf(
     schema: ExtractedSchema,
     effort: "medium",
     maxTokens: 16000,
-    // A PDF cannot be parsed locally; say so rather than inventing questions.
+    // Nothing is invented for a PDF that could not be read.
     demo: () => ({
       questions: [],
       notes:
-        "Demo mode cannot read PDFs -- that step needs the model. Use the 'Paste text' tab, or add an ANTHROPIC_API_KEY to enable PDF import.",
+        "No questions could be read from that PDF. Try the Paste text tab instead.",
     }),
   });
 }

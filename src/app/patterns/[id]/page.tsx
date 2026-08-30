@@ -6,6 +6,7 @@ import {
   Badge,
   Card,
   CardTitle,
+  ConfidenceBadge,
   Divider,
   LinkButton,
   PageHeader,
@@ -59,6 +60,7 @@ export default async function PatternDetailPage({
             >
               {pattern.severity} impact
             </Badge>
+            <ConfidenceBadge confidence={pattern.confidence} />
             {pattern.mistake_type && (
               <Badge tone="neutral">
                 {MISTAKE_LABELS[pattern.mistake_type as MistakeType] ??

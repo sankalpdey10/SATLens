@@ -67,6 +67,7 @@ export interface Pattern {
   skill: string | null;
   mistake_type: MistakeType | null;
   severity: Severity;
+  confidence: number;
   status: PatternStatus;
   first_seen: string;
   last_seen: string;

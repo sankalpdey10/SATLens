@@ -65,30 +65,28 @@ Open [http://localhost:3000](http://localhost:3000). The database (`satlens.db`)
 
 ### Demo mode (no API key needed)
 
-For a hackathon demo, a classroom, or working on a plane, SATLens runs the entire product with **zero API calls**:
+SATLens runs the entire product with **zero API calls**:
 
 ```bash
-npm run seed   # load the sample student history
+npm run seed   # load Sankalp's practice history
 npm run demo   # start with SATLENS_DEMO=1
 ```
 
-Every button works — diagnosis, pattern detection, practice generation, retest evaluation, the study plan, classification and text import — backed by deterministic local implementations in `src/lib/demo.ts` instead of the model.
+Every feature works — diagnosis, pattern detection, practice generation, retest evaluation, the study plan, classification and text import — backed by deterministic implementations in `src/lib/demo.ts` rather than the model. The only thing it cannot do is read a PDF; that path reports that no questions were found and points at the paste-text tab.
 
-**These are rules, not reasoning, and the app says so.** A "Demo mode" badge sits in the sidebar the whole time. The fallbacks are data-driven where it counts — pattern detection genuinely groups your real diagnoses by skill and mistake type, the study plan really does weight time inversely to your measured accuracy, and retest status is computed from real attempts — so the demo still behaves correctly if someone adds a question live. But they cannot describe a mechanism they have not been told about, and they should never be presented as AI analysis.
+**What this means, stated plainly for whoever maintains this repo:** in demo mode the analysis is rule-based, not model-generated. The fallbacks are data-driven — pattern detection really does group the student's diagnoses by skill and mistake type, the study plan really does weight time against measured accuracy, and retest status is computed from real attempts — so the app behaves correctly if questions are added live. But rules cannot describe a mechanism they were not given, and the product UI does not label itself as running in demo mode. If someone asks whether a particular screen is live AI, the honest answer depends on which mode it was started in.
 
-The one thing demo mode cannot do is read a PDF; it says so and points you at the paste-text tab.
-
-To switch back to real analysis, put a key in `.env.local` and run `npm run dev` instead of `npm run demo`.
+Set `ANTHROPIC_API_KEY` in `.env.local` and run `npm run dev` instead of `npm run demo` for real model-backed analysis.
 
 ### Trying it with sample data
-
-To see the dashboard, patterns, and progress tracking populated without importing anything:
 
 ```bash
 npm run seed
 ```
 
-This loads a fictional student's three practice tests plus a week of targeted practice, with diagnoses and detected patterns already in place. All question text in the fixture is original. Run it again with `--reset` to start clean.
+Loads **Sankalp**, a demo student with 140 analyzed questions across five practice tests and two recent sessions: 77% overall accuracy, a 69-second average, 32 diagnosed mistakes and three detected patterns. His profile is deliberately uneven — strong in Algebra, Advanced Math and Geometry, weak in Inference and Words in Context — so the dashboard, error log, pattern pages and study plan all have something real to show.
+
+All passages, questions and answer choices in the fixture are original writing.
 
 ## How it works
 

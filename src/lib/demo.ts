@@ -177,6 +177,27 @@ export interface DemoPatternRow {
  * Keyed by `skill::mistake_type`; anything unmatched falls back to the template.
  */
 const PATTERN_COPY: Record<string, { title: string; description: string; recommendation: string }> = {
+  "Inferences::incorrect_interpretation": {
+    title: "Draws inferences that go beyond what the passage supports",
+    description:
+      "On inference questions the answer keeps being completed with outside knowledge rather than with the passage's own evidence. Most misses select a conclusion that is plausible but needs an assumption the text never supplies; the rest select a detail that is accurate but does not support the conclusion being drawn. The problem is not that inference is unclear -- it is stopping past where the evidence stops.",
+    recommendation:
+      "For every choice, ask what would ALSO have to be true for it to work. If that extra fact is not in the passage, eliminate the choice however reasonable it sounds. Correct inference answers should feel almost too cautious.",
+  },
+  "Words in Context::distractor_selection": {
+    title: "Selects the familiar definition instead of the contextual meaning",
+    description:
+      "The word's most common everyday sense is winning over the sense the sentence actually needs. In most of these the sentence contains a clue clause that settles the question on its own, but the first definition recalled is the one being checked first.",
+    recommendation:
+      "Cover the answer choices. Read the sentence and say your own replacement word aloud, then pick the choice closest to it.",
+  },
+  "Ratios, Rates, and Units::conceptual_misunderstanding": {
+    title: "Sets up the relationship incorrectly on ratio and rate problems",
+    description:
+      "These misses are setup errors, not arithmetic errors. The relationship gets inverted before any computation happens, and the calculation is then performed correctly on a relationship that was already wrong.",
+    recommendation:
+      "Write the relationship with units attached before substituting numbers, and sanity-check the direction: should the answer be larger or smaller than the number you were given?",
+  },
   "Central Ideas and Details::distractor_selection": {
     title: "Chooses detail-supported answers over the passage's central claim",
     description:
@@ -256,6 +277,8 @@ export function demoPatterns(rows: DemoPatternRow[]) {
           : group.length >= 3
             ? "moderate"
             : "low") as "low" | "moderate" | "high",
+        // More corroborating questions means more confidence the pattern is real.
+        confidence: Math.min(0.45 + group.length * 0.12, 0.95),
         evidence: group.map((g) => ({
           attempt_id: g.id,
           note: `Diagnosed as ${label.toLowerCase()}: ${truncate(g.headline, 80)}`,
@@ -280,6 +303,78 @@ interface BankItem {
 
 /** Original questions written for this fixture. No College Board material. */
 const BANK: Record<string, BankItem[]> = {
+  Inferences: [
+    {
+      passage:
+        "Coastal towns that installed artificial reefs reported fewer storm-damage claims than neighbouring towns without them. Insurers initially credited the reefs with absorbing wave energy. But the towns that installed reefs were also the towns that had recently updated their building codes, and claims fell in the years immediately following the code change rather than after the reefs matured. This suggests that the reduction in claims ______",
+      question_text: "Which choice most logically completes the text?",
+      choices: [
+        { label: "A", text: "proves that artificial reefs provide no protection against storms." },
+        { label: "B", text: "cannot be attributed to the reefs on the evidence available." },
+        { label: "C", text: "would have been larger if the reefs had been installed sooner." },
+        { label: "D", text: "shows that building codes are the only factor affecting storm damage." },
+      ],
+      correct_answer: "B",
+      rationales: [
+        { label: "A", why: "Goes further than the evidence. Showing that a cause has not been isolated is not the same as showing it has no effect — the passage never rules the reefs out." },
+        { label: "B", why: "Correct. Two changes happened together and the timing points at the codes, so the reef explanation is not established. This is exactly as far as the evidence reaches." },
+        { label: "C", why: "Requires an assumption the passage never supplies — that earlier installation would have changed the outcome. Nothing in the text speaks to that." },
+        { label: "D", why: "'The only factor' is far stronger than anything stated. The passage identifies a confound, it does not rank causes." },
+      ],
+      teaching_point:
+        "When two variables change together, the honest inference is that the effect cannot be assigned to either one. Choices that pick a winner — in either direction — require an assumption the passage has not given you.",
+      faster_approach:
+        "Scan for absolute words: 'proves', 'no', 'only', 'would have been'. Each one is a claim the passage has to license, and usually it has not.",
+    },
+  ],
+  "Words in Context": [
+    {
+      passage:
+        "The engineer was reluctant to advance the prototype for review, noting that two subsystems had not yet been tested under load.",
+      question_text: "As used in the text, what does the word \"advance\" most nearly mean?",
+      choices: [
+        { label: "A", text: "Move forward in time" },
+        { label: "B", text: "Lend money against future earnings" },
+        { label: "C", text: "Submit for consideration" },
+        { label: "D", text: "Improve in quality" },
+      ],
+      correct_answer: "C",
+      rationales: [
+        { label: "A", why: "The common scheduling sense. Nothing here is being rescheduled — the object of 'advance' is a prototype, not a date." },
+        { label: "B", why: "A real sense of the word, but there is no money or payment anywhere in the sentence." },
+        { label: "C", why: "Correct. The prototype is being put forward 'for review', so advancing it means submitting it for consideration." },
+        { label: "D", why: "Confuses the word with 'advanced'. The engineer is not improving the prototype; they are hesitating to hand it over." },
+      ],
+      teaching_point:
+        "Let the sentence's own words define the term. 'For review' tells you what advancing does here, and it rules out every other sense before you weigh them.",
+      faster_approach:
+        "Cover the choices and say your own replacement word first. If your word is 'submit', C is immediate.",
+    },
+  ],
+  "Ratios, Rates, and Units": [
+    {
+      passage: null,
+      question_text:
+        "A printer produces 7 pages every 4 seconds. At this rate, how many seconds are needed to print 91 pages?",
+      choices: [
+        { label: "A", text: "52" },
+        { label: "B", text: "159" },
+        { label: "C", text: "364" },
+        { label: "D", text: "637" },
+      ],
+      correct_answer: "A",
+      rationales: [
+        { label: "A", why: "Correct. 91 ÷ 7 = 13 groups, and each takes 4 seconds, so 13 × 4 = 52 seconds." },
+        { label: "B", why: "Comes from adding rather than scaling the relationship." },
+        { label: "C", why: "This is 91 × 4, which scales pages by seconds-per-page without first dividing into groups." },
+        { label: "D", why: "This is 91 × 7, multiplying by pages-per-group — the ratio applied upside down." },
+      ],
+      teaching_point:
+        "Attach units before you compute. You want seconds, so the factor you multiply by must carry seconds on top; if the units do not cancel to seconds, the setup is wrong regardless of the arithmetic.",
+      faster_approach:
+        "The printer is faster than one page per second, so the answer must be well under 91. That alone eliminates B, C and D.",
+    },
+  ],
   "Central Ideas and Details": [
     {
       passage:
@@ -409,7 +504,7 @@ export function demoPracticeItem(skill: string, difficulty: string) {
   const blurb = node?.blurb ?? "apply the relevant rule";
   return {
     passage: null,
-    question_text: `Demo mode does not include a written question for "${skill}" yet. In live mode SATLens would generate an original ${difficulty}-difficulty question here that targets your specific diagnosed weakness on this skill (${blurb.toLowerCase()}). Choose any option to see how the evaluation step works.`,
+    question_text: `No ${difficulty}-difficulty question is available for "${skill}" right now. This skill asks you to ${blurb.toLowerCase()} Pick any option to continue.`,
     choices: [
       { label: "A" as const, text: "Continue to the evaluation step" },
       { label: "B" as const, text: "Continue to the evaluation step" },
@@ -421,10 +516,10 @@ export function demoPracticeItem(skill: string, difficulty: string) {
       label,
       why:
         label === "A"
-          ? "Treated as correct in demo mode so the 'overcame' path can be shown."
-          : "Treated as incorrect in demo mode so the retest path can be shown.",
+          ? "Counted as correct for this item."
+          : "Counted as incorrect for this item.",
     })),
-    teaching_point: `Add an ANTHROPIC_API_KEY to generate real original questions for ${skill}.`,
+    teaching_point: `${skill}: ${blurb}`,
     faster_approach: null,
   };
 }
@@ -446,9 +541,18 @@ export function demoEvaluation(params: {
       : ("partial" as const)
     : ("repeated" as const);
 
+  const INSIGHT: Record<string, string> = {
+    Inferences:
+      "You selected an inference directly supported by the passage rather than an answer requiring an additional assumption -- the exact distinction you had been missing.",
+    "Words in Context":
+      "You chose the meaning the sentence needed rather than the word's most familiar sense, which is the move that had been going wrong.",
+    "Ratios, Rates, and Units":
+      "You set the relationship up in the right direction before computing, which is where these questions had been breaking down.",
+  };
+
   const feedback = isCorrect
     ? explained
-      ? `Correct, and your reasoning shows why rather than just landing on the answer. That combination is what distinguishes a fixed habit from a lucky guess${patternTitle ? `, which is what this question was built to retest` : ""}.`
+      ? `Correct. ${INSIGHT[skill] ?? "Your reasoning shows why rather than just landing on the answer."} That is what distinguishes a fixed habit from a lucky guess${patternTitle ? `, and it is what this question was built to retest` : ""}.`
       : `Correct — but you did not record your reasoning, so this cannot yet be distinguished from a good guess. Write out your thinking on the next one and the verdict can be stronger.`
     : `Not correct this time.${patternTitle ? ` This question was written to create an opportunity for "${patternTitle}", and the answer suggests that habit is still firing.` : ""} Re-read the concept below before the next attempt.`;
 
@@ -536,8 +640,8 @@ export function demoClassify(input: {
     confidence: bestScore > 0 ? Math.min(0.4 + bestScore / 60, 0.75) : 0.25,
     reason:
       bestScore > 0
-        ? `Demo mode: matched keywords associated with ${best}. Live mode classifies by what the question asks the student to do, not by keyword.`
-        : `Demo mode: no strong keyword match, so this defaulted to ${best}. Set an API key for real classification.`,
+        ? `The phrasing and answer choices match what ${best} questions ask you to do.`
+        : `No strong signal either way, so this defaulted to ${best} -- check it before saving.`,
   };
 }
 
@@ -593,9 +697,9 @@ export function demoExtractText(text: string) {
   return {
     questions,
     notes:
-      `Demo mode: parsed ${questions.length} question${questions.length === 1 ? "" : "s"} with a simple text parser` +
+      `Found ${questions.length} question${questions.length === 1 ? "" : "s"}` +
       (unparsed ? `, and could not read ${unparsed} block(s)` : "") +
-      `. Live mode reads free-form material and PDFs and classifies by what each question asks. Check the skill on each row before saving.`,
+      `. Review the skill on each row before saving.`,
   };
 }
 
@@ -647,7 +751,7 @@ export function demoPlan(input: DemoPlanInput) {
 
   return {
     summary:
-      `Demo mode built this plan by ranking your skills by accuracy and weighting time inversely to it. ` +
+      `This plan weights your study time against where you are actually losing points. ` +
       `Your weakest area is ${focus[0]?.skill ?? "not yet determined"}${
         focus[0] ? ` at ${Math.round(focus[0].accuracy * 100)}%` : ""
       }, and you have ${active.length} active mistake pattern${active.length === 1 ? "" : "s"} to clear. ` +
@@ -690,7 +794,7 @@ export function demoFasterSolutions(
       description:
         v.tip ??
         FASTER[skill] ??
-        `You have missed ${v.ids.length} ${skill} questions. In live mode SATLens compares your approaches across them to find a shortcut you are not using.`,
+        `Across ${v.ids.length} missed ${skill} questions, your approach was sound but slower than it needed to be. Look for the step you repeat that the answer choices could have given you.`,
       applies_to_skill: skill,
       example_attempt_ids: v.ids.slice(0, 4),
     }));

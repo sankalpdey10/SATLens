@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS patterns (
   skill          TEXT,             -- null when the pattern spans a whole domain
   mistake_type   TEXT,
   severity       TEXT NOT NULL DEFAULT 'moderate',  -- low | moderate | high
+  confidence     REAL NOT NULL DEFAULT 0.7,         -- how well the evidence supports the pattern
   status         TEXT NOT NULL DEFAULT 'active',    -- active | improving | resolved
   first_seen     TEXT NOT NULL,
   last_seen      TEXT NOT NULL
@@ -124,6 +125,28 @@ CREATE INDEX IF NOT EXISTS idx_evidence_attempt    ON pattern_evidence(attempt_i
 CREATE INDEX IF NOT EXISTS idx_patterns_skill      ON patterns(skill);
 `;
 
+/**
+ * Additive column migrations. SQLite's CREATE TABLE IF NOT EXISTS will not add
+ * a column to a table that already exists, so a database created by an earlier
+ * version needs them applied explicitly.
+ */
+const COLUMN_MIGRATIONS: { table: string; column: string; ddl: string }[] = [
+  {
+    table: "patterns",
+    column: "confidence",
+    ddl: "ALTER TABLE patterns ADD COLUMN confidence REAL NOT NULL DEFAULT 0.7",
+  },
+];
+
+function migrate(db: Database.Database): void {
+  for (const { table, column, ddl } of COLUMN_MIGRATIONS) {
+    const columns = db
+      .prepare(`PRAGMA table_info(${table})`)
+      .all() as { name: string }[];
+    if (!columns.some((c) => c.name === column)) db.exec(ddl);
+  }
+}
+
 export function getDb(): Database.Database {
   if (globalForDb.__satlensDb) return globalForDb.__satlensDb;
   if (instance) return instance;
@@ -132,6 +155,7 @@ export function getDb(): Database.Database {
     process.env.SATLENS_DB_PATH ?? path.join(process.cwd(), "satlens.db");
   const db = new Database(file);
   db.exec(SCHEMA);
+  migrate(db);
 
   instance = db;
   globalForDb.__satlensDb = db;

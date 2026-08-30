@@ -267,6 +267,7 @@ export interface NewPattern {
   skill?: string | null;
   mistake_type?: string | null;
   severity: "low" | "moderate" | "high";
+  confidence: number;
   evidence: { attempt_id: string; note?: string | null }[];
 }
 
@@ -288,8 +289,9 @@ export function replacePatterns(patterns: NewPattern[]): void {
     const insertPattern = db.prepare(
       `INSERT INTO patterns (
          id, created_at, updated_at, title, description, recommendation,
-         section, domain, skill, mistake_type, severity, status, first_seen, last_seen
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         section, domain, skill, mistake_type, severity, confidence, status,
+         first_seen, last_seen
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     const insertEvidence = db.prepare(
       `INSERT OR IGNORE INTO pattern_evidence (pattern_id, attempt_id, note)
@@ -322,6 +324,7 @@ export function replacePatterns(patterns: NewPattern[]): void {
         p.skill ?? null,
         p.mistake_type ?? null,
         p.severity,
+        p.confidence,
         "active", // refined by recomputePatternStatus below
         prior?.first_seen ?? range.first ?? now.slice(0, 10),
         range.last ?? now.slice(0, 10),

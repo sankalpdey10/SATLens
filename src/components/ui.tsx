@@ -220,6 +220,44 @@ export function PatternStatusBadge({ status }: { status: string }) {
   );
 }
 
+export function confidenceLabel(confidence: number): "High" | "Medium" | "Low" {
+  if (confidence >= 0.8) return "High";
+  if (confidence >= 0.55) return "Medium";
+  return "Low";
+}
+
+/** How strongly the evidence supports a pattern, shown wherever a pattern is. */
+export function ConfidenceBadge({ confidence }: { confidence: number }) {
+  const label = confidenceLabel(confidence);
+  return (
+    <Badge tone="neutral">
+      <span
+        className="inline-flex items-end gap-[1.5px]"
+        aria-hidden
+        style={{ height: 9 }}
+      >
+        {[3, 6, 9].map((h, i) => (
+          <span
+            key={h}
+            style={{
+              width: 2.5,
+              height: h,
+              borderRadius: 1,
+              background:
+                (label === "High" && i <= 2) ||
+                (label === "Medium" && i <= 1) ||
+                (label === "Low" && i === 0)
+                  ? "var(--text-secondary)"
+                  : "var(--border-strong)",
+            }}
+          />
+        ))}
+      </span>
+      {label} confidence
+    </Badge>
+  );
+}
+
 /* ------------------------------------------------------------- accuracy bar */
 
 export function accuracyTone(
