@@ -38,16 +38,20 @@ AI analyzes the student's history and reasoning across multiple questions to ide
 To run a demo:
 
 **Step 1.**
+Clone this repository onto your computer then open it in VS Code.
+Then enter the following commands in a terminal:
+
+**Step 2.**
 ```bash
 npm install
 ```
 
-**Step 2.**
+**Step 3.**
 ```bash
 npm run seed && npm run demo
 ```
 
-**Step 3.**
+**Step 4.**
 copy and paste "http://localhost:3000" into your browser
 
 
